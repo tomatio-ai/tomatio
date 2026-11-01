@@ -1,0 +1,21 @@
+name: Idea
+description: Suggest a feature or an improvement.
+labels: [idea]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The problem or the job, in your own words, before any solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How TomaTío could help with it.
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: How you work around it today, other tools that do it well, who else needs it.

@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in TomaTío does not work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. For a security problem, do not use this form: report it privately as SECURITY.md describes.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to show it
+      placeholder: |
+        1. Go to TomaTío > ...
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: TomaTío, WordPress and PHP versions (the Plugins screen shows TomaTío's; Tools > Site Health shows the others).
+      placeholder: TomaTío 1.8.10, WordPress 7.1, PHP 8.3
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: AI client, if one was involved
+      placeholder: claude.ai, ChatGPT, Cursor, VS Code, Claude Code ...
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: Error messages, screenshots, your host. Remove keys, passwords and private content first.
