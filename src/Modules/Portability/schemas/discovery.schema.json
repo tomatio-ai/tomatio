@@ -1,0 +1,347 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pcp-protocol.github.io/pcp/schemas/0.3/discovery.schema.json",
+  "title": "PCP discovery document",
+  "description": "The JSON served at /.well-known/pcp.json (SPEC §2). A context document describes one context, carries its MCP endpoint and points at its OAuth protected resource metadata (SPEC §2.5, §3.2). A root document describes a multi-context host and carries a context URL template instead.",
+  "type": "object",
+  "required": [
+    "pcp_version"
+  ],
+  "properties": {
+    "pcp_version": {
+      "type": "string",
+      "description": "The PCP version the server implements. A v0.3 server emits \"0.3\".",
+      "enum": [
+        "0.3"
+      ]
+    },
+    "multi_context": {
+      "type": "boolean",
+      "description": "true in the root document of a multi-context host (SPEC §2.2). Absent or false in a context document."
+    },
+    "context_url_template": {
+      "type": "string",
+      "description": "Root documents only. An RFC 6570 level 1 URI Template with exactly one variable, {context}, that expands to a context's base URL. The context document is at <base>/.well-known/pcp.json.",
+      "pattern": "^https?://[^{}]*\\{context\\}[^{}]*$"
+    },
+    "kind": {
+      "description": "Context documents only. What the context is (SPEC §1.2).",
+      "enum": [
+        "personal",
+        "work",
+        "team"
+      ]
+    },
+    "controller_type": {
+      "description": "Context documents only. The type of the context's controller (SPEC §1.2, §9.2): human or org. REQUIRED for kind work; MUST be human for kind personal.",
+      "enum": [
+        "human",
+        "org"
+      ]
+    },
+    "mcp_endpoint": {
+      "type": "string",
+      "format": "uri",
+      "description": "Context documents only. The context's MCP Streamable HTTP endpoint. It is also the context's OAuth resource identifier: the resource of its protected resource metadata, character for character (SPEC §3.2)."
+    },
+    "resource_metadata": {
+      "type": "string",
+      "format": "uri",
+      "description": "Context documents only. URL of the context's OAuth 2.0 Protected Resource Metadata (RFC 9728), normally the path-suffixed well-known URL of mcp_endpoint. The same URL appears in every WWW-Authenticate challenge of the endpoint (SPEC §3.2).",
+      "pattern": "^https?://"
+    },
+    "alternate_endpoints": {
+      "type": "array",
+      "description": "Context documents only. Other URLs at which the same context's MCP endpoint is served, each with its own context document and protected resource metadata (SPEC §9.8).",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https?://"
+      }
+    },
+    "authorization_server": {
+      "type": "string",
+      "format": "uri",
+      "description": "Deprecated. A hint kept from v0.2: if present it MUST equal the first entry of authorization_servers in the context's protected resource metadata. Clients discover the authorization server from that metadata (SPEC §2.3, §3.2), never from this field.",
+      "deprecated": true
+    },
+    "server_card": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the MCP server card for this context's endpoint, when the server publishes one."
+    },
+    "profile": {
+      "description": "Which profile document the context has (SPEC §4). Defaults: \"core\" for personal and work contexts, \"team\" for team contexts.",
+      "enum": [
+        "core",
+        "team",
+        "none"
+      ]
+    },
+    "profile_extensions": {
+      "type": "array",
+      "description": "Profile extension namespaces present in this context (SPEC §4.5).",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_]*)+$"
+      }
+    },
+    "connections": {
+      "type": "array",
+      "description": "Connection ids available in this context (SPEC §6.4).",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]{0,15}$"
+      }
+    },
+    "extensions": {
+      "type": "array",
+      "description": "Tool extensions the server implements, by reverse-DNS id (SPEC §6.5).",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)+$"
+      }
+    },
+    "features": {
+      "type": "array",
+      "description": "Optional parts of the model this context uses (SPEC §1.4).",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "partitions",
+          "review",
+          "delegation"
+        ]
+      }
+    },
+    "conformance": {
+      "type": "array",
+      "description": "Conformance profiles the server claims for this context (SPEC §10). A claim is a statement the conformance suite can check, not a description.",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "personal",
+          "team"
+        ]
+      }
+    },
+    "export": {
+      "type": "boolean",
+      "description": "true is a claim that the server meets SPEC §8 for this context: a full export and an import of its own format. Servers MUST NOT emit true otherwise."
+    },
+    "encryption": {
+      "$ref": "#/$defs/encryption"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "multi_context": {
+            "const": true
+          }
+        },
+        "required": [
+          "multi_context"
+        ]
+      },
+      "then": {
+        "required": [
+          "context_url_template"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "mcp_endpoint"
+              ]
+            },
+            {
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "required": [
+                "resource_metadata"
+              ]
+            },
+            {
+              "required": [
+                "controller_type"
+              ]
+            },
+            {
+              "required": [
+                "alternate_endpoints"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "kind",
+          "mcp_endpoint",
+          "resource_metadata",
+          "encryption"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "work"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "controller_type"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "personal"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "controller_type": {
+            "const": "human"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "encryption": {
+      "type": "object",
+      "description": "Who holds the keys and who can read plaintext (SPEC §2.4). Indexes, embeddings, caches and other derived data count as content and are covered by the same declaration.",
+      "required": [
+        "key_custody",
+        "readable_by"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key_custody": {
+          "description": "host: the host holds keys that decrypt the context without any principal's involvement. user: keys are wrapped by secrets only principals, and clients they authorized, hold; the host decrypts only while serving a request a principal authorized, and keeps neither keys nor plaintext afterwards (SPEC §9.1.3). device: plaintext and keys exist only on principals' devices; the host stores ciphertext (SPEC §9.1.4).",
+          "enum": [
+            "host",
+            "user",
+            "device"
+          ]
+        },
+        "readable_by": {
+          "type": "array",
+          "description": "Every party that can obtain plaintext. principals: authorized principals through their clients (always listed). host_in_request: the host, only while serving an authorized request. host: the host, at any time. escrow: a third party holding a recovery share.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "principals",
+              "host_in_request",
+              "host",
+              "escrow"
+            ]
+          },
+          "contains": {
+            "const": "principals"
+          }
+        },
+        "e2e": {
+          "type": "boolean",
+          "description": "End-to-end encrypted. MAY be true only when key_custody is device. Defaults to false."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "key_custody": {
+                "const": "host"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "readable_by": {
+                "contains": {
+                  "const": "host"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "key_custody": {
+                "const": "user"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "readable_by": {
+                "contains": {
+                  "const": "host_in_request"
+                },
+                "not": {
+                  "contains": {
+                    "const": "host"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "key_custody": {
+                "const": "device"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "readable_by": {
+                "not": {
+                  "contains": {
+                    "enum": [
+                      "host",
+                      "host_in_request"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "e2e": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

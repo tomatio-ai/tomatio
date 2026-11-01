@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "brain/section",
+	"title": "TomaTío Section",
+	"category": "text",
+	"description": "Inline, synced-pattern-style editor for one TomaTío artifact section.",
+	"textdomain": "agent-brain",
+	"attributes": {
+		"sectionId": {
+			"type": "number"
+		}
+	},
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"editorScript": "file:./index.js"
+}
