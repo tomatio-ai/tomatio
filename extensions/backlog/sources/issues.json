@@ -1,0 +1,28 @@
+{
+	"contract": 1,
+	"id": "issues",
+	"name": "GitHub and Forgejo issues",
+	"link": {
+		"prefix": "forgejo",
+		"prefixes": ["forgejo", "github"],
+		"example": "forgejo:team/project#807",
+		"alias": "#{id}"
+	},
+	"mode": "continuous",
+	"trigger": ["webhook", "poll"],
+	"fields": {
+		"title": { "to": "title", "direction": "read", "clash": "replace" },
+		"body": { "to": "detail", "direction": "read", "clash": "fill" },
+		"state": { "to": "snapshot.state", "direction": "read", "clash": "replace" },
+		"labels": { "to": "tags", "direction": "read", "clash": "fill" },
+		"milestone": { "to": "release", "direction": "read", "clash": "flag" },
+		"assignees": { "to": "snapshot.assignees", "direction": "read", "clash": "replace" },
+		"pulls": { "to": "snapshot.prs", "direction": "read", "clash": "replace" }
+	},
+	"new_items": { "status": "inbox", "kind": "feature", "kinds_by_label": { "bug": "bug", "epic": "epic", "chore": "chore", "feature": "feature", "enhancement": "feature", "idea": "idea" } },
+	"echo": "none",
+	"credentials": [
+		{ "name": "token", "what": "A token that can read the repository's issues and pull requests. Optional for a public repository.", "required": false }
+	],
+	"snapshot": ["state", "labels", "milestone", "assignees", "prs"]
+}
