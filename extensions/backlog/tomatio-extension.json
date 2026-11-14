@@ -1,0 +1,42 @@
+{
+	"contract": 1,
+	"id": "tomatio.backlog",
+	"name": "Backlog",
+	"version": "0.1.0",
+	"publisher": {
+		"name": "TomaTío",
+		"url": "https://tomatio.ai"
+	},
+	"source": {
+		"bundled": true
+	},
+	"entry": "index.html",
+	"files": [
+		{
+			"path": "index.html",
+			"sha256": "08ae3ec61f1bd28cc2c45409f1dd66bfa74f69e044df3f823c4031bfd229cd28"
+		},
+		{
+			"path": "apple-touch-icon.png",
+			"sha256": "86dde1f540bf3e340e342a64bb47a2662637ee643c62dc571d4a1b704b39d6f9",
+			"bundled_from": "assets/brand/apple-touch-icon.png"
+		}
+	],
+	"capabilities": {
+		"sandbox": [],
+		"connect_hosts": [],
+		"script_hosts": []
+	},
+	"store": {
+		"collections": {
+			"comments": "read",
+			"integrations": "read",
+			"items": "read",
+			"log": "read",
+			"meta": "read"
+		}
+	},
+	"binding": {
+		"per": "brain"
+	}
+}

@@ -1,0 +1,78 @@
+{
+	"contract": 1,
+	"id": "tomatio.tioday",
+	"name": "TíoDay",
+	"version": "1.2.1",
+	"publisher": {
+		"name": "TomaTío",
+		"url": "https://tomatio.ai"
+	},
+	"source": {
+		"bundled": true
+	},
+	"entry": "index.html",
+	"files": [
+		{
+			"path": "index.html",
+			"sha256": "a6e3ea56001102e09251a70c16f4e20cdab1e6aa746e19aff0e8d1d49145289a"
+		},
+		{
+			"path": "apple-touch-icon.png",
+			"sha256": "86dde1f540bf3e340e342a64bb47a2662637ee643c62dc571d4a1b704b39d6f9",
+			"bundled_from": "assets/brand/apple-touch-icon.png"
+		}
+	],
+	"capabilities": {
+		"sandbox": [],
+		"connect_hosts": [],
+		"script_hosts": []
+	},
+	"store": {
+		"collections": {
+			"comments": {
+				"preset": "entries",
+				"writers": "member",
+				"schema": {
+					"type": "object",
+					"required": [
+						"on",
+						"text"
+					],
+					"properties": {
+						"on": {
+							"type": "string",
+							"maxLength": 120
+						},
+						"text": {
+							"type": "string",
+							"maxLength": 4000
+						},
+						"by": {
+							"type": "string",
+							"maxLength": 80
+						},
+						"at": {
+							"type": "string",
+							"maxLength": 40
+						},
+						"edited_at": {
+							"type": "string",
+							"maxLength": 40
+						}
+					}
+				}
+			},
+			"decisions": "read",
+			"done": "read",
+			"inflight": "read",
+			"meta": "read",
+			"prefs": "personal",
+			"release": "read",
+			"tasks": "shared"
+		}
+	},
+	"binding": {
+		"per": "person",
+		"home": true
+	}
+}

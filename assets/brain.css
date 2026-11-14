@@ -1,0 +1,154 @@
+/*
+ * The brain design (#630): one stylesheet for a brain's documents and pages,
+ * in TomaTío's look (the launch roadmap and TíoDay). Artifacts\Design puts
+ * the brain's own tokens in front (accent, mark, name) and serves it inline.
+ *
+ * Tokens: --ab-bg --ab-surface --ab-fg --ab-muted --ab-line --ab-accent
+ * --ab-accent-soft --ab-accent-ink --ab-on-accent, the status pairs
+ * --ab-done/-soft --ab-active/-soft --ab-decide/-soft --ab-event/-soft,
+ * --ab-font-display --ab-font-body --ab-font-mono --ab-radius --ab-shadow.
+ *
+ * Element rules sit in :where(), so they weigh nothing: a page's own CSS
+ * always wins. They apply under .ab-doc; on a page without CSS of its own,
+ * and on documents, Design rewrites them to apply to the whole page.
+ */
+:root {
+  --ab-bg: #f6f7f9; --ab-surface: #fff; --ab-fg: #16181d; --ab-muted: #5d6370; --ab-line: #dde1e8;
+  --ab-on-accent: #0b0d12;
+  --ab-done: #1f7a4d; --ab-done-soft: #e3f3ea; --ab-active: #9a5b00; --ab-active-soft: #fbf0dc;
+  --ab-decide: #7a3db8; --ab-decide-soft: #f1e8fb; --ab-event: #b4364a; --ab-event-soft: #fbe7ea;
+  --ab-font-display: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ab-font-body: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ab-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ab-radius: 10px;
+  --ab-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 18px rgba(16, 24, 40, .07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ab-bg: #111318; --ab-surface: #191c23; --ab-fg: #e8eaf0; --ab-muted: #9aa1ae; --ab-line: #2c313b;
+    --ab-accent: var(--ab-accent-dark); --ab-accent-soft: var(--ab-accent-soft-dark); --ab-accent-ink: var(--ab-accent-dark);
+    --ab-done: #6fd09c; --ab-done-soft: #17301f; --ab-active: #f0b45c; --ab-active-soft: #33270f;
+    --ab-decide: #c39af0; --ab-decide-soft: #2a1f3a; --ab-event: #f08a9a; --ab-event-soft: #3a1c22;
+    --ab-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+  }
+}
+:root[data-theme="dark"] {
+  --ab-bg: #111318; --ab-surface: #191c23; --ab-fg: #e8eaf0; --ab-muted: #9aa1ae; --ab-line: #2c313b;
+  --ab-accent: var(--ab-accent-dark); --ab-accent-soft: var(--ab-accent-soft-dark); --ab-accent-ink: var(--ab-accent-dark);
+  --ab-done: #6fd09c; --ab-done-soft: #17301f; --ab-active: #f0b45c; --ab-active-soft: #33270f;
+  --ab-decide: #c39af0; --ab-decide-soft: #2a1f3a; --ab-event: #f08a9a; --ab-event-soft: #3a1c22;
+  --ab-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+/* The page. Only a page that follows the design turns dark with the system. */
+.ab-doc { color-scheme: light dark; background: var(--ab-bg); color: var(--ab-fg); font-family: var(--ab-font-body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+:root[data-theme="light"] .ab-doc { color-scheme: light; }
+:root[data-theme="dark"] .ab-doc { color-scheme: dark; }
+:where(.ab-doc *, .ab-doc *::before, .ab-doc *::after) { box-sizing: border-box; }
+.ab-page { max-width: 760px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.ab-page--wide { max-width: 900px; }
+
+/* Text. */
+:where(.ab-doc h1) { font-family: var(--ab-font-display); font-weight: 700; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 10px; text-wrap: balance; }
+:where(.ab-doc h2) { font-family: var(--ab-font-display); font-size: 21px; font-weight: 600; line-height: 1.3; margin: 36px 0 14px; padding-top: 14px; border-top: 2px solid var(--ab-fg); text-wrap: balance; }
+:where(.ab-doc h3) { font-family: var(--ab-font-display); font-size: 17px; font-weight: 600; line-height: 1.35; margin: 24px 0 6px; }
+:where(.ab-doc h4, .ab-doc h5, .ab-doc h6) { font-family: var(--ab-font-display); font-size: 15px; font-weight: 600; margin: 18px 0 4px; }
+:where(.ab-doc p) { margin: 0 0 14px; }
+:where(.ab-doc a) { color: var(--ab-accent-ink); text-underline-offset: 2px; }
+:where(.ab-doc ul, .ab-doc ol) { margin: 0 0 14px; padding-left: 22px; }
+:where(.ab-doc li) { margin: 0 0 6px; }
+:where(.ab-doc li::marker) { color: var(--ab-accent); }
+:where(.ab-doc blockquote) { margin: 0 0 16px; padding: 14px 18px; border-left: 3px solid var(--ab-accent); background: var(--ab-accent-soft); border-radius: 0 var(--ab-radius) var(--ab-radius) 0; font-size: 18px; font-weight: 500; line-height: 1.45; }
+:where(.ab-doc blockquote > :last-child) { margin-bottom: 0; }
+:where(.ab-doc code, .ab-doc kbd) { font-family: var(--ab-font-mono); font-size: .88em; background: var(--ab-line); padding: .1em .35em; border-radius: 4px; }
+:where(.ab-doc pre) { font-family: var(--ab-font-mono); font-size: 13.5px; line-height: 1.5; overflow: auto; background: var(--ab-surface); border: 1px solid var(--ab-line); border-radius: var(--ab-radius); padding: 12px 14px; margin: 0 0 16px; }
+:where(.ab-doc pre code) { background: none; padding: 0; font-size: inherit; }
+:where(.ab-doc hr) { border: 0; border-top: 1px solid var(--ab-line); margin: 28px 0; }
+:where(.ab-doc img, .ab-doc video) { max-width: 100%; height: auto; }
+:where(.ab-doc figure) { margin: 0 0 16px; }
+:where(.ab-doc figcaption, .ab-doc small) { font-size: 13px; color: var(--ab-muted); }
+:where(.ab-doc mark) { background: var(--ab-active-soft); color: inherit; padding: 0 .15em; border-radius: 3px; }
+
+/* Tables: a ruled card, header in small capitals; wide tables scroll. */
+:where(.ab-doc table) { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 0 0 16px; background: var(--ab-surface); }
+:where(.ab-doc th, .ab-doc td) { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--ab-line); vertical-align: top; overflow-wrap: break-word; }
+:where(.ab-doc th) { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--ab-muted); font-weight: 500; }
+:where(.ab-doc tr:last-child td) { border-bottom: 0; }
+.ab-table, .wp-block-table { overflow-x: auto; margin: 0 0 16px; border: 1px solid var(--ab-line); border-radius: var(--ab-radius); background: var(--ab-surface); }
+.ab-table table, .wp-block-table table { margin: 0; }
+
+/* The brand line: the brain's mark and name. An empty one fills itself in. */
+.ab-brand { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; font-family: var(--ab-font-display); font-weight: 700; font-size: 17px; line-height: 1.2; color: var(--ab-fg); }
+.ab-brand::before { content: ""; flex: none; width: 32px; height: 32px; border-radius: 7px; background: var(--ab-mark) center / cover no-repeat; }
+.ab-brand:empty::after { content: var(--ab-name); }
+.ab-brand img { width: 32px; height: 32px; border-radius: 7px; }
+.ab-brand:has(img)::before { display: none; }
+
+/* Page heading parts. */
+.ab-kicker { font-family: var(--ab-font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ab-accent-ink); margin: 0 0 10px; }
+.ab-lede { color: var(--ab-muted); font-size: 17px; margin: 0 0 8px; max-width: 62ch; }
+.ab-meta { font-family: var(--ab-font-mono); font-size: 12px; color: var(--ab-muted); letter-spacing: .02em; margin: 6px 0 24px; }
+
+/* Cards and grids. */
+.ab-card { background: var(--ab-surface); border: 1px solid var(--ab-line); border-radius: var(--ab-radius); box-shadow: var(--ab-shadow); padding: 16px 18px; margin: 0 0 12px; }
+.ab-card > :first-child { margin-top: 0; }
+.ab-card > :last-child { margin-bottom: 0; }
+.ab-card > h3:first-child, .ab-card > b:first-child, .ab-card > strong:first-child { display: block; font-family: var(--ab-font-display); font-weight: 600; font-size: 16px; line-height: 1.3; margin: 0 0 4px; }
+.ab-card--accent { border-left: 4px solid var(--ab-accent); }
+.ab-card--milestone { background: var(--ab-accent-soft); border-color: var(--ab-accent); box-shadow: none; }
+.ab-grid, .wp-block-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0 0 16px; }
+.ab-grid > .ab-card { margin: 0; }
+.wp-block-column { min-width: 0; }
+
+/* Key facts: a strip of label / value pairs. */
+.ab-facts { display: flex; flex-wrap: wrap; gap: 1px; background: var(--ab-line); border: 1px solid var(--ab-line); border-radius: var(--ab-radius); overflow: hidden; margin: 24px 0; }
+.ab-facts > * { flex: 1 1 150px; background: var(--ab-surface); padding: 12px 14px; min-width: 0; margin: 0; }
+.ab-facts .ab-k { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--ab-muted); }
+.ab-facts .ab-v { display: block; font-family: var(--ab-font-display); font-weight: 600; font-size: 19px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+/* Callouts. */
+.ab-callout { margin: 0 0 16px; padding: 12px 16px; border-left: 4px solid var(--ab-accent); background: var(--ab-accent-soft); border-radius: 0 var(--ab-radius) var(--ab-radius) 0; }
+.ab-callout > :first-child { margin-top: 0; }
+.ab-callout > :last-child { margin-bottom: 0; }
+.ab-callout--success { border-color: var(--ab-done); background: var(--ab-done-soft); }
+.ab-callout--warning { border-color: var(--ab-active); background: var(--ab-active-soft); }
+.ab-callout--danger { border-color: var(--ab-event); background: var(--ab-event-soft); }
+.ab-callout--decision { border-color: var(--ab-decide); background: var(--ab-decide-soft); }
+
+/* Status pills. */
+.ab-status { display: inline-block; font: 500 11px/1.6 var(--ab-font-body); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 999px; margin: 0 6px 6px 0; vertical-align: 2px; white-space: nowrap; background: var(--ab-line); color: var(--ab-muted); }
+.ab-status--done { background: var(--ab-done-soft); color: var(--ab-done); }
+.ab-status--in-progress, .ab-status--active { background: var(--ab-active-soft); color: var(--ab-active); }
+.ab-status--decision { background: var(--ab-decide-soft); color: var(--ab-decide); }
+.ab-status--blocked, .ab-status--event { background: var(--ab-event-soft); color: var(--ab-event); }
+.ab-status--milestone { background: var(--ab-accent); color: var(--ab-on-accent); }
+.ab-status--idea { background: transparent; border: 1px dashed var(--ab-muted); padding: 1px 8px; }
+/* #754: a section waiting for review, shown to its reviewers only. */
+.ab-waiting { border-left: 3px dashed var(--ab-active); padding-left: 16px; }
+
+/* Contents, footer. */
+.ab-toc { margin: 0 0 28px; padding: 12px 16px; background: var(--ab-surface); border: 1px solid var(--ab-line); border-radius: var(--ab-radius); font-size: 15px; }
+.ab-toc strong { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--ab-muted); font-weight: 500; }
+.ab-toc ul { margin: 6px 0 0; padding-left: 18px; }
+.ab-toc li { margin: 2px 0; }
+.ab-toc .ab-toc--h3 { margin-left: 16px; list-style: circle; }
+.ab-footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--ab-line); color: var(--ab-muted); font-size: 13px; }
+
+@media (max-width: 560px) {
+  :where(.ab-doc h2) { margin-top: 28px; }
+  :where(.ab-doc th, .ab-doc td) { padding: 8px 10px; }
+  .ab-page { padding-block: 24px 48px; }
+}
+
+@media print {
+  :root:not([data-ab-print]), :root[data-theme] { --ab-bg: #fff; --ab-surface: #fff; --ab-fg: #000; --ab-muted: #444; --ab-line: #ccc; --ab-shadow: none; }
+  .ab-doc { color-scheme: light; font-size: 11pt; background: #fff; }
+  .ab-page { max-width: none; padding: 0; }
+  .ab-toc { display: none; }
+  :where(.ab-doc a) { color: inherit; text-decoration: none; }
+  :where(.ab-doc h2, .ab-doc h3) { break-after: avoid; }
+  .ab-card, .ab-callout, :where(.ab-doc blockquote, .ab-doc pre, .ab-doc tr) { break-inside: avoid; }
+  .ab-table, .wp-block-table { overflow: visible; }
+  .ab-brand::before, .ab-status, .ab-callout, :where(.ab-doc blockquote) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
