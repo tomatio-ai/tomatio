@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use TomaTío in your work, please cite it as below."
+title: "TomaTío"
+abstract: "A private brain for your team's AI agents, on your own WordPress."
+type: software
+license: GPL-2.0-or-later
+url: "https://tomatio.ai"
+repository-code: "https://github.com/tomatio-ai/tomatio"
+authors:
+  - given-names: Dennis
+    family-names: Kittrell
+    alias: thefactremains
+  - given-names: Roger
+    family-names: Gentry
+    alias: jamesrascal
