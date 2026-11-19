@@ -1,0 +1,163 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AgentBrain\Modules\Extensions;
+
+use AgentBrain\Modules\Admin\SettingsHub;
+use AgentBrain\Modules\Admin\Ui;
+use WP_Error;
+
+/**
+ * #987: Settings > Extensions, and the Get started checklist's "Choose
+ * extensions" step links here. One switch per extension, each with a line
+ * on what it does. Saving counts as choosing, even with both left off.
+ */
+final class SettingsTab {
+
+	public const ACTION = 'ab_extensions';
+
+	public static function register(): void {
+		add_action( 'admin_post_' . self::ACTION, [ self::class, 'handleSave' ] );
+		InstallScreen::register();
+		RunScreen::register();
+	}
+
+	public static function renderBody(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect.
+		$status = isset( $_GET['ab_extensions'] ) ? sanitize_key( wp_unslash( (string) $_GET['ab_extensions'] ) ) : '';
+		if ( $status === 'saved' ) {
+			echo '<div class="notice notice-success inline" role="status"><p>' . esc_html__( 'Saved.', 'tomatio' ) . '</p></div>';
+		} elseif ( $status !== '' ) {
+			$error = get_transient( 'ab_extensions_error_' . get_current_user_id() );
+			delete_transient( 'ab_extensions_error_' . get_current_user_id() );
+			echo '<div class="notice notice-error inline" role="alert"><p>' . esc_html( is_string( $error ) && $error !== '' ? $error : __( 'Nothing was saved.', 'tomatio' ) ) . '</p></div>';
+		}
+
+		$tioday  = Switches::describe( Switches::TIODAY );
+		$tomagic = Switches::describe( Switches::BACKLOG );
+
+		echo '<section class="ab-ui-card"><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		wp_nonce_field( self::ACTION );
+		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Ui escapes what it emits.
+		echo Ui::setting(
+			__( 'TíoDay (one per person)', 'tomatio' ),
+			$tioday['enabled']
+				? esc_html__( 'On: every person gets a TíoDay, a private page their AIs keep current.', 'tomatio' )
+				: esc_html__( 'Off: no TíoDays are made. Any that exist stay.', 'tomatio' ),
+			Ui::toggle( 'tioday', 'ab-ext-tioday', (bool) $tioday['enabled'] ),
+			'ab-ext-tioday',
+			'<p>' . esc_html( (string) $tioday['what'] ) . ' ' . esc_html__( 'Each person\'s is made the first time they sign in, open the home page or connect an AI, led by their default agent. Anyone can turn their own off on their profile. Turning this off makes no new ones; existing TíoDays stay as they are.', 'tomatio' ) . '</p>'
+		);
+		// #994: what TíoDay may do beyond a plain page, approved by a manager.
+		$tiodayPackage = Package::bundled( Switches::TIODAY );
+		if ( $tiodayPackage instanceof Package && $tiodayPackage->sandbox() !== [] ) {
+			$newTab = array_intersect( $tiodayPackage->sandbox(), Sandbox::approved( $tiodayPackage->id() ) ) !== [];
+			echo Ui::setting(
+				__( 'TíoDay links open in a new tab', 'tomatio' ),
+				$newTab
+					? esc_html__( 'On: a link on a TíoDay opens in a new tab.', 'tomatio' )
+					: esc_html__( 'Off: a link on a TíoDay offers to copy its address.', 'tomatio' ),
+				Ui::toggle( 'tioday_new_tab', 'ab-ext-tioday-new-tab', $newTab ),
+				'ab-ext-tioday-new-tab',
+				'<p>' . esc_html__( 'TíoDay asks for one thing beyond a plain page: links that open in a new tab, with no way back into the page that opened them. Only a manager can turn it on. "Disable interactive mode" turns it off again for every page.', 'tomatio' ) . '</p>'
+			);
+		}
+		$open = $tomagic['enabled'] && ! empty( $tomagic['revealed'] ) && (string) ( $tomagic['url'] ?? '' ) !== ''
+			? ' <a href="' . esc_url( (string) $tomagic['url'] ) . '">' . esc_html__( 'Open Tomagic', 'tomatio' ) . '</a>'
+			: '';
+		$status = ! $tomagic['enabled']
+			? __( 'Off: no board. Turn it on to open it.', 'tomatio' )
+			: ( ! empty( $tomagic['revealed'] )
+				? __( 'On: the brain has its board.', 'tomatio' )
+				: __( 'On: hidden until TíoDay offers it.', 'tomatio' ) );
+		echo Ui::setting(
+			__( 'Tomagic (one for the brain)', 'tomatio' ),
+			esc_html( $status ) . $open,
+			Ui::toggle( 'tomagic', 'ab-ext-tomagic', (bool) $tomagic['enabled'] ),
+			'ab-ext-tomagic',
+			'<p><strong>' . esc_html( (string) $tomagic['tagline'] ) . '</strong> ' . esc_html( (string) $tomagic['what'] ) . ' ' . esc_html__( 'It is on for every brain. TíoDay offers it in one line when the list grows, a task is for someone else, or the first idea is logged. Not now hides that line for 30 days. Accepting adds the link and opens the board with the open tasks on it. Turning it off archives the board with everything on it; nothing is deleted. A brain that already had it on keeps the link.', 'tomatio' ) . '</p>'
+		);
+		// #1002: Voice, off by default.
+		$voice = Switches::describe( Switches::VOICE );
+		echo Ui::setting(
+			__( 'Voice (one per person and agent)', 'tomatio' ),
+			$voice['enabled']
+				? esc_html__( 'On: AIs get, check and learn writing voices; each person sees theirs on their profile.', 'tomatio' )
+				: esc_html__( 'Off: no voice tools. Voices already kept stay.', 'tomatio' ),
+			Ui::toggle( 'voice', 'ab-ext-voice', (bool) $voice['enabled'] ),
+			'ab-ext-voice',
+			'<p>' . esc_html( (string) $voice['what'] ) . ' ' . esc_html__( 'A voice is kept in its owner\'s private scope and read only by them, the AIs working for them, their lead and curators.', 'tomatio' ) . '</p>'
+		);
+		echo Ui::saveBar( 'ab_extensions_submit' );
+		// phpcs:enable
+		echo '</form></section>';
+
+		// #994: extensions installed from an archive (managers only).
+		InstallScreen::render();
+		// #994: turn off, roll back, pin (managers only).
+		RunScreen::render();
+
+		// #1001: the issue tracker and the Inbox sources, once the board is on.
+		if ( $tomagic['enabled'] ) {
+			\AgentBrain\Modules\Backlog\Sources\TrackerSettings::render();
+		}
+	}
+
+	public static function handleSave(): void {
+		if ( ! current_user_can( SettingsHub::CAPABILITY ) ) {
+			wp_die( esc_html__( 'You do not have permission to manage TomaTío settings.', 'tomatio' ), 403 );
+		}
+		check_admin_referer( self::ACTION );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified by check_admin_referer() above.
+		$result = self::save( wp_unslash( $_POST ), (int) get_current_user_id() );
+		if ( $result instanceof WP_Error ) {
+			set_transient( 'ab_extensions_error_' . get_current_user_id(), $result->get_error_message(), 5 * MINUTE_IN_SECONDS );
+		}
+
+		wp_safe_redirect( SettingsHub::url( SettingsHub::TAB_EXTENSIONS, [ 'ab_extensions' => $result instanceof WP_Error ? 'error' : 'saved' ] ) );
+		exit;
+	}
+
+	/**
+	 * Apply the form: each switch that changed, then mark the choice made.
+	 *
+	 * @param mixed $post
+	 * @return true|WP_Error
+	 */
+	public static function save( $post, int $actorId ) {
+		$post = is_array( $post ) ? $post : [];
+		$all  = Switches::all();
+		foreach ( [ 'tioday' => Switches::TIODAY, 'tomagic' => Switches::BACKLOG ] as $field => $name ) {
+			$on = isset( $post[ $field ] ) && $post[ $field ] === '1';
+			if ( $on === $all[ $name ] ) {
+				continue;
+			}
+			$done = Switches::set( $name, $on, $actorId );
+			if ( $done instanceof WP_Error ) {
+				return $done;
+			}
+		}
+		$voice = isset( $post['voice'] ) && $post['voice'] === '1';
+		if ( $voice !== Switches::enabled( Switches::VOICE ) ) {
+			Switches::set( Switches::VOICE, $voice, $actorId );
+		}
+		Switches::markChosen();
+
+		// #994: new-tab links on TíoDay, a manager's approval (Sandbox).
+		$tioday = Package::bundled( Switches::TIODAY );
+		if ( $tioday instanceof Package && $tioday->sandbox() !== [] ) {
+			$want = isset( $post['tioday_new_tab'] ) && $post['tioday_new_tab'] === '1' ? $tioday->sandbox() : [];
+			if ( ( array_intersect( $tioday->sandbox(), Sandbox::approved( $tioday->id() ) ) !== [] ) !== ( $want !== [] ) ) {
+				$done = Sandbox::approveBundled( $tioday->id(), $want, $actorId );
+				if ( $done instanceof WP_Error ) {
+					return $done;
+				}
+			}
+		}
+
+		return true;
+	}
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-brain.invalid/pcp-ext/1/export.signature.schema.json",
+  "title": "Agent Brain export manifest signature",
+  "description": "manifest.signature.json at the root of an Agent Brain PCP archive (PROV-8): an HMAC-SHA-256, under the exporting brain's per-brain signing key, over the SHA-256 of manifest.json. A verifier recomputes the manifest's SHA-256 and the HMAC before trusting anything the manifest says, so a manifest (or any listed file) altered after export is caught. Archive metadata like manifest.json itself: never listed in the manifest's files[].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["alg", "key_id", "fingerprint", "signed_at", "signature"],
+  "properties": {
+    "alg": {
+      "const": "hmac-sha256",
+      "description": "The signature algorithm. Only HMAC-SHA-256 is defined."
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^sk-[a-f0-9]{12}$",
+      "description": "The signing key's id, so a verifier can tell which of the brain's keys (current or retired) signed. Not the key."
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$",
+      "description": "The first 16 hex characters of the key's SHA-256, for display and for telling two keys apart."
+    },
+    "signed_at": {
+      "$ref": "memory.page.schema.json#/$defs/utc_datetime",
+      "description": "When the signature was made."
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "HMAC-SHA-256 of the manifest's SHA-256 (its 64 lowercase hex characters) under the named key, with domain separation for the export-manifest purpose."
+    }
+  }
+}
