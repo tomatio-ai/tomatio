@@ -1,0 +1,25 @@
+{
+  "id": "linear",
+  "name": "Linear",
+  "blurb": "Issues and projects. One sign-in, reused by context and planning sync.",
+  "hosts": ["linear.app", "api.linear.app"],
+  "token": {
+    "label": "Personal API key",
+    "help": "In Linear: Settings, Account, Security and access, Personal API keys. Create a key and paste it here. It is stored encrypted and never shown again."
+  },
+  "oauth": {
+    "authorize": "https://linear.app/oauth/authorize",
+    "token": "https://api.linear.app/oauth/token",
+    "scopes": "read,write",
+    "extra": { "prompt": "consent" },
+    "exchange": "form"
+  },
+  "test": {
+    "method": "POST",
+    "url": "https://api.linear.app/graphql",
+    "headers": { "Content-Type": "application/json" },
+    "body": { "query": "{ viewer { name } }" },
+    "name_path": "data.viewer.name"
+  },
+  "limits": { "per_minute": 50, "backoff": [60, 300, 900] }
+}

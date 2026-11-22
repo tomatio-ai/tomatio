@@ -1,0 +1,107 @@
+{
+	"contract": 1,
+	"id": "tomatio.tioday",
+	"name": "TíoDay",
+	"version": "1.9.2",
+	"publisher": {
+		"name": "TomaTío",
+		"url": "https://tomatio.ai"
+	},
+	"source": {
+		"bundled": true
+	},
+	"entry": "index.html",
+	"files": [
+		{
+			"path": "index.html",
+			"sha256": "9ba848a3807d3875cd4244e48dbaed70fe9986d9f5a0f77a4c0e966b3a967456"
+		},
+		{
+			"path": "apple-touch-icon.png",
+			"sha256": "646c93416d96983cc81fbf4d9356f177e5a6eddce205547480c81f2f88a0af4f"
+		}
+	],
+	"capabilities": {
+		"sandbox": [
+			"allow-popups",
+			"allow-popups-to-escape-sandbox"
+		],
+		"connect_hosts": [],
+		"script_hosts": []
+	},
+	"store": {
+		"collections": {
+			"answers": {
+				"preset": "shared",
+				"key": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+				"schema": {
+					"type": "object",
+					"required": [
+						"status"
+					],
+					"properties": {
+						"status": {
+							"type": "string",
+							"enum": [
+								"clear",
+								"keep"
+							]
+						},
+						"by": {
+							"type": "string",
+							"maxLength": 80
+						},
+						"at": {
+							"type": "string",
+							"maxLength": 40
+						}
+					}
+				}
+			},
+			"comments": {
+				"preset": "entries",
+				"writers": "member",
+				"schema": {
+					"type": "object",
+					"required": [
+						"on",
+						"text"
+					],
+					"properties": {
+						"on": {
+							"type": "string",
+							"maxLength": 120
+						},
+						"text": {
+							"type": "string",
+							"maxLength": 4000
+						},
+						"by": {
+							"type": "string",
+							"maxLength": 80
+						},
+						"at": {
+							"type": "string",
+							"maxLength": 40
+						},
+						"edited_at": {
+							"type": "string",
+							"maxLength": 40
+						}
+					}
+				}
+			},
+			"decisions": "read",
+			"done": "read",
+			"inflight": "read",
+			"meta": "read",
+			"prefs": "personal",
+			"release": "read",
+			"tasks": "shared"
+		}
+	},
+	"binding": {
+		"per": "person",
+		"home": true
+	}
+}
