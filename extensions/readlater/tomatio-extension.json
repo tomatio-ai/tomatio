@@ -1,0 +1,72 @@
+{
+	"contract": 1,
+	"id": "tomatio.readlater",
+	"name": "Read later",
+	"version": "1.0.0",
+	"publisher": {
+		"name": "TomaTío",
+		"url": "https://tomatio.ai"
+	},
+	"source": {
+		"bundled": true
+	},
+	"entry": "index.html",
+	"files": [
+		{
+			"path": "index.html",
+			"sha256": "83c77485219be14e15a3a78a8d69484ddc6fcd6cd7be30650503e4249bedd50d"
+		},
+		{
+			"path": "apple-touch-icon.png",
+			"sha256": "86dde1f540bf3e340e342a64bb47a2662637ee643c62dc571d4a1b704b39d6f9",
+			"bundled_from": "assets/brand/apple-touch-icon.png"
+		}
+	],
+	"capabilities": {
+		"sandbox": [
+			"allow-popups",
+			"allow-popups-to-escape-sandbox"
+		],
+		"connect_hosts": [],
+		"script_hosts": []
+	},
+	"store": {
+		"collections": {
+			"clips": {
+				"preset": "shared",
+				"key": "^c[0-9a-f]{32}$",
+				"schema": {
+					"type": "object",
+					"required": [
+						"url",
+						"title",
+						"state"
+					],
+					"properties": {
+						"url": { "type": "string", "maxLength": 2000, "pattern": "^https?://" },
+						"title": { "type": "string", "maxLength": 300 },
+						"site": { "type": "string", "maxLength": 200 },
+						"author": { "type": "string", "maxLength": 200 },
+						"published": { "type": "string", "maxLength": 40 },
+						"mode": { "type": "string", "enum": [ "page", "selection", "bookmark" ] },
+						"note": { "type": "string", "maxLength": 2000 },
+						"excerpt": { "type": "string", "maxLength": 300 },
+						"tags": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 40 } },
+						"scope_id": { "type": "integer", "minimum": 0 },
+						"state": { "type": "string", "enum": [ "unread", "read", "archived" ] },
+						"saved_at": { "type": "string", "maxLength": 40 },
+						"clipped_at": { "type": "string", "maxLength": 40 },
+						"read_at": { "type": "string", "maxLength": 40 },
+						"archived_at": { "type": "string", "maxLength": 40 },
+						"clips": { "type": "integer", "minimum": 0 },
+						"memory_ids": { "type": "array", "maxItems": 20, "items": { "type": "integer" } },
+						"source_id": { "type": "integer", "minimum": 0 }
+					}
+				}
+			}
+		}
+	},
+	"binding": {
+		"per": "person"
+	}
+}

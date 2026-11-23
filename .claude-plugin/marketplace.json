@@ -1,0 +1,14 @@
+{
+  "name": "tomatio",
+  "description": "TomaTío plugins for Claude Code.",
+  "owner": {
+    "name": "TomaTío"
+  },
+  "plugins": [
+    {
+      "name": "tomatio-hooks",
+      "source": "./hooks",
+      "description": "Keep secrets out of the transcript and keep your TíoDay current, outside the AI."
+    }
+  ]
+}
