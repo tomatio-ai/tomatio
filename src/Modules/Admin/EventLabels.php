@@ -1,0 +1,448 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AgentBrain\Modules\Admin;
+
+/**
+ * Plain-language wording for audit events, shared by the Overview live feed
+ * and the Audit Log viewer (issue #82) so the two never disagree.
+ */
+final class EventLabels {
+
+	/**
+	 * Plain-language labels for agent abilities, shown as "<agent> <label>".
+	 */
+	private const ABILITY_LABELS = [
+		'agent-brain/context-briefing'       => 'loaded a session briefing',
+		'agent-brain/memory-search'          => 'searched memory',
+		'agent-brain/memory-get'             => 'opened a memory',
+		'agent-brain/memory-write'           => 'saved a memory',
+		'agent-brain/knowledge-read'         => 'read approved knowledge',
+		'agent-brain/handoff-request-review' => 'asked a curator for review',
+		'agent-brain/handoff-read'           => 'read a handoff',
+		'agent-brain/artifact-create'        => 'started a shared document',
+		'agent-brain/artifact-get-outline'   => 'read a document outline',
+		'agent-brain/artifact-set-outline'   => 'outlined a document',
+		'agent-brain/artifact-reorder'       => 'reordered a document',
+		'agent-brain/artifact-status'        => 'checked a document',
+		'agent-brain/artifact-list'          => 'looked up documents',
+		'agent-brain/artifact-assemble'      => 'assembled a document',
+		'agent-brain/artifact-compile'       => 'compiled a document',
+		'agent-brain/artifact-publish'       => 'published a document',
+		'agent-brain/artifact-unpublish'     => 'unpublished a document',
+		'agent-brain/artifact-archive'       => 'archived a document',
+		'agent-brain/section-create'         => 'added a section',
+		'agent-brain/section-assign'         => 'assigned a section',
+		'agent-brain/section-claim'          => 'claimed a section',
+		'agent-brain/section-release'        => 'released a section',
+		'agent-brain/section-get'            => 'read a section',
+		'agent-brain/section-update'         => 'edited a section',
+		'agent-brain/section-submit'         => 'submitted a section for review',
+		'agent-brain/section-review'         => 'reviewed a section',
+		'agent-brain/agent-propose'          => 'proposed a new agent',
+		'agent-brain/agent-list'             => 'looked up the agents and their scopes',
+		'agent-brain/agent-create'           => 'added an agent',
+		'agent-brain/agent-update'           => 'changed an agent',
+		'agent-brain/scope-create'           => 'added a scope',
+		'agent-brain/agent-proposal-decide'  => 'decided a proposed agent',
+		'agent-brain/act-as'                 => 'acted on behalf of a person',
+		'agent-brain/agent-register'         => 'registered itself with a registration key',
+		'agent-brain/agent-whoami'           => 'checked its own identity',
+		'agent-brain/artifact-share-create'  => 'created a share link',
+		'agent-brain/artifact-share-revoke'  => 'revoked a share link',
+		'agent-brain/artifact-share-list'    => 'listed share links',
+		'agent-brain/artifact-share-analytics' => 'read share analytics',
+		'agent-brain/artifact-members-address-get' => 'read the members address',
+		'agent-brain/artifact-html-put'      => 'uploaded files to an HTML page',
+		'agent-brain/artifact-html-get'      => 'read the files of an HTML page',
+		'agent-brain/artifact-html-approve'  => 'approved a version of an HTML page',
+		'agent-brain/artifact-version-list'      => 'listed an artifact version history',
+		'agent-brain/artifact-version-get'       => 'read a version of an artifact',
+		'agent-brain/artifact-version-compare'   => 'compared two versions of an artifact',
+		'agent-brain/artifact-version-restore'   => 'restored an old version of an artifact as a new version',
+		'agent-brain/comment-list'           => 'listed comments',
+		'agent-brain/comment-add'            => 'commented on a document',
+		'agent-brain/comment-reply'          => 'replied to a comment',
+		'agent-brain/comment-resolve'        => 'resolved a comment thread',
+		'agent-brain/comment-convert'        => 'turned a comment into a request',
+		'agent-brain/artifact-store-get'     => 'read an artifact data store',
+		'agent-brain/artifact-store-set'     => 'wrote an artifact data store',
+		'agent-brain/artifact-store-delete'  => 'deleted from an artifact data store',
+		'agent-brain/artifact-store-config'  => 'changed the page store settings of an artifact',
+		'agent-brain/artifact-store-history' => 'read the history of a data store document',
+		'agent-brain/artifact-store-restore' => 'restored a data store document version',
+		'agent-brain/artifact-store-undo-link' => 'undid the data store writes of a share link',
+		'agent-brain/artifact-upload-put'    => 'uploaded a file to an artifact',
+		'agent-brain/artifact-upload-list'   => 'listed the files of an artifact',
+		'agent-brain/artifact-upload-delete' => 'deleted a file from an artifact',
+		'agent-brain/ask'                    => 'asked the brain a question',
+		'agent-brain/source-register'        => 'registered an outside source',
+		'agent-brain/source-get'             => 'read an outside source record',
+		'agent-brain/section-blame'          => 'viewed a section blame',
+		'agent-brain/knowledge-blame'        => 'viewed a knowledge blame',
+		'agent-brain/brain-app-link-get'     => 'read the app link',
+		'agent-brain/brain-app-link-set'     => 'changed the app link',
+		'agent-brain/tioday-get'             => 'read a TíoDay',
+		'agent-brain/tioday-task'            => 'added or updated a TíoDay task',
+		'agent-brain/tioday-done'            => 'recorded work done on a TíoDay',
+		'agent-brain/tioday-inflight'        => 'updated work in flight on a TíoDay',
+		'agent-brain/tioday-decided'         => 'recorded a decision on a TíoDay',
+		'agent-brain/tioday-reply'           => 'replied to a TíoDay comment',
+		'agent-brain/tioday-release'         => 'updated a release on a TíoDay',
+		'agent-brain/tioday-assigned'        => 'read the TíoDay tasks assigned to it',
+		'agent-brain/inbox-claim'            => 'took the events in its inbox',
+		'agent-brain/inbox-done'             => 'closed events from its inbox',
+		'agent-brain/inbox-peek'             => 'looked at its inbox',
+		'agent-brain/inbox-wake'             => 'set its wake address',
+		'agent-brain/timer-set'              => 'set a reminder to follow up',
+		'agent-brain/timer-list'             => 'read its reminders',
+		'agent-brain/timer-cancel'           => 'cancelled a reminder',
+		'agent-brain/voice-get'              => 'read a writing voice',
+		'agent-brain/voice-list'             => 'listed the writing voices kept for someone',
+		'agent-brain/voice-check'            => 'checked a draft against a writing voice',
+		'agent-brain/voice-learn'            => 'learned a writing voice from samples',
+		'agent-brain/voice-set'              => 'changed a writing voice',
+		'agent-brain/voice-import'           => 'imported writing voices from MYNAH',
+		'agent-brain/hand-over-list'         => 'listed what someone who leaves owns',
+		'agent-brain/hand-over'              => 'handed someone over and revoked their access',
+		'agent-brain/clip-save'              => 'saved a web page from the web clipper',
+		'agent-brain/clip-lookup'            => 'checked whether a web page is saved',
+		'agent-brain/project-get'            => 'read the backlog',
+		'agent-brain/project-log'            => 'logged an item in the backlog',
+		'agent-brain/project-rank'           => 'ranked a backlog item',
+		'agent-brain/project-comment'        => 'commented on a backlog item',
+		'agent-brain/project-status'         => 'set the status of a backlog item',
+		'agent-brain/project-edit'           => 'set the driver, impact, estimate, urgency, release or assignee of a backlog item',
+		'agent-brain/project-idea'           => 'promoted, rejected or restored an idea on Magic Backlog',
+		'agent-brain/project-release'        => 'changed the backlog\'s release plan',
+		'agent-brain/review-queue'           => 'read the review queue',
+		'agent-brain/review-decide'          => 'decided a suggested fact in chat',
+		'agent-brain/extension-list'         => 'listed the brain\'s extensions',
+		'agent-brain/extension-enable'       => 'turned an extension on or off',
+		'agent-brain/extension-bind-request' => 'asked to bind a page to an extension',
+		'agent-brain/extension-turn-off'     => 'turned an extension\'s pages off or on',
+		'agent-brain/extension-rollback'     => 'rolled an extension back to a kept release, or checked what it may break',
+		'agent-brain/extension-pin'          => 'pinned or unpinned a page\'s extension release',
+		'agent-brain/integration-list'       => 'listed the connected services',
+		'agent-brain/integration-status'     => 'checked a connected service',
+		'agent-brain/handoff-dismiss'        => 'closed a review request in chat',
+		'agent-brain/artifact-settings-get'  => 'read the settings of an artifact',
+		'agent-brain/artifact-settings-set'  => 'changed the settings of an artifact',
+		'agent-brain/help'                   => 'looked something up in the TomaTío manual',
+		'agent-brain/artifact-review-get'    => 'read the review page of an artifact',
+		'agent-brain/artifact-review-set'    => 'wrote the review summary and decisions of an artifact',
+	];
+
+	/**
+	 * Non-ability events worth showing in the live feed; everything else
+	 * (backups, compression, recall internals) stays out of the feed but
+	 * remains in the audit log.
+	 */
+	private const EVENT_LABELS = [
+		'oauth.grant'                 => 'connected an AI client',
+		'knowledge_review'            => 'reviewed a proposed fact',
+		'knowledge_lifecycle'         => 'marked a reference page as current',
+		'agent.switch'                => 'switched role',
+		'agent.create'                => 'added an agent',
+		'agent.decline'               => 'declined a proposed agent',
+		'agent.master_set'            => 'made an agent a master agent',
+		'agent.master_cleared'        => 'made a master agent an ordinary agent again',
+		'artifact_create'             => 'started a shared document',
+		'artifact_stage_transition'   => 'moved a document to the next stage',
+		'artifact_section_review'     => 'reviewed a section',
+		'artifact_review_decision'    => 'answered a decision on a review page',
+		'artifact_review_brief_set'   => 'wrote the review summary of a document',
+		'artifact_lead_warning'       => 'set a lead who is not an agent',
+		'artifact_publish'            => 'published a document',
+		'artifact_unpublish'          => 'unpublished a document',
+		'publish_blocked'             => 'was blocked from publishing',
+		'forget.completed'            => 'completed a forget request',
+		'erase.complete'              => 'completed a forget request',
+		'compression.endpoint_updated' => 'changed the summarising endpoint',
+		'compression.endpoint_removed' => 'removed the summarising endpoint',
+		'brain.seeded'                => 'set up the brain from the onboarding answers',
+		'app_link.updated'            => 'changed the app link',
+		// #818: the plugin's own TíoDay page, refreshed on a plugin update or kept.
+		'tioday.page_refreshed'       => 'brought a TíoDay up to the plugin\'s new page',
+		'tioday.page_kept'            => 'left a TíoDay on its own page, not the plugin\'s new one',
+		'readlater.page_refreshed'    => 'brought a Read later list up to the plugin\'s new page',
+		'readlater.page_kept'         => 'left a Read later list on its own page, not the plugin\'s new one',
+		'extension.installed'         => 'installed an extension from an archive',
+		'extension.updated'           => 'updated an extension from an archive; its pages got the new release',
+		'extension.removed'           => 'removed an extension; its pages stay as plain HTML pages',
+		'extension.flags_approved'    => 'changed what an extension may do beyond a plain page (links in a new tab)',
+		'extension.page_refreshed'    => 'brought a page up to its extension\'s new release',
+		'extension.page_kept'         => 'left a page on its own files, not its extension\'s new release',
+		'extension.page_bound'        => 'bound a page to its extension, so its files come from the plugin only',
+		'extension.page_unbound'      => 'unbound a page from its extension, so it can be changed by hand',
+		'extension.page_bind_requested' => 'asked to bind a page to an extension; it waits in the Review queue',
+		'extension.page_bind_approved'  => 'approved binding a page to an extension, so its files come from the extension only',
+		'extension.page_bind_refused'   => 'refused binding a page to an extension; the page stays as it is',
+		'extension.page_bind_expired'   => 'dropped a request to bind a page to an extension that nobody decided within 14 days',
+		'extension.page_bind_requests_erased' => 'erased a person\'s requests to bind a page to an extension (Erase Personal Data)',
+		// #994: turning off, rolling back, pinning.
+		'extension.turned_off'        => 'turned an extension off: its pages are served as not found until it is on again',
+		'extension.turned_on'         => 'turned an extension back on: its pages are served again',
+		'extension.all_off'           => 'turned off all extensions: every extension page is served as not found',
+		'extension.all_on'            => 'turned all extensions back on',
+		'extension.rolled_back'       => 'rolled an extension back to an earlier kept release',
+		'extension.page_pinned'       => 'pinned a page to its extension release, so updates and rollbacks skip it',
+		'extension.page_unpinned'     => 'unpinned a page, so it runs its extension\'s current release',
+		'extension.base_sandbox_on'   => 'set an extension to run with the base sandbox only, without the flags it asks for',
+		'extension.base_sandbox_off'  => 'let an extension run with the sandbox flags it asks for and was approved again',
+		'integration.connect'         => 'connected an outside service',
+		'integration.disconnect'      => 'disconnected an outside service',
+		'integration.app'             => 'saved a sign-in app for an outside service',
+	];
+
+	/**
+	 * Events only the Audit Log shows (internal housekeeping the live feed
+	 * deliberately hides).
+	 */
+	private const AUDIT_ONLY_LABELS = [
+		'artifact_html_put'                 => 'uploaded a version of an HTML page',
+		'artifact_html_approved'            => 'approved a version of an HTML page',
+		'artifact_page_edited'              => 'edited an HTML page in place',
+		'artifact_html_restore'             => 'restored an old version of an HTML page as a new version',
+		'artifact_html_auto_reload_on'      => 'turned on reloading open pages when a new version of an HTML page is approved',
+		'artifact_html_auto_reload_off'     => 'turned off reloading open pages when a new version of an HTML page is approved',
+		'artifact_section_restore'          => 'restored an old version of a section as a new version',
+		'compression.job_failed'            => 'compression job failed',
+		'compression.job_completed'         => 'compressed memories',
+		'compression.spend_blocked'         => 'compression paused by the spend cap',
+		'compression.disabled'              => 'compression was disabled',
+		'compression.endpoint_tested'       => 'tested the summarising endpoint',
+		'doctrine.seeded'                   => 'added a doctrine every brain ships with',
+		'tioday.made'                       => 'made a person\'s TíoDay',
+		'tioday.make_failed'                => 'could not make a person\'s TíoDay',
+		'tioday.off'                        => 'turned a person\'s TíoDay off',
+		'tioday.on'                         => 'turned a person\'s TíoDay back on',
+		'tioday.self_closed'                => 'closed a TíoDay item whose issue or pull request closed',
+		'tioday.stale_cleared'              => 'cleared a stale in-flight item on a TíoDay',
+		'tioday.stale_kept'                 => 'kept a stale in-flight item on a TíoDay',
+		'backlog.idea_archived'             => 'archived an idea whose issue closed or whose task is done',
+		'backup.run'                        => 'ran a backup',
+		'integration.write'                 => 'wrote to an outside service',
+		'integration.setup_skipped'         => 'skipped connecting Linear or Notion in Get started',
+		'integration.context_preview'       => 'previewed a Notion or Linear read',
+		'integration.context_store'         => 'stored a Notion or Linear read in a scope',
+		'integration.context_refresh'       => 'refreshed a Notion or Linear read',
+		'integration.context_remove'        => 'stopped reading a Notion or Linear source',
+		'integration.planning_preview'      => 'previewed a planning sync',
+		'integration.planning_approve'      => 'approved a planning sync',
+		'integration.planning_sync'         => 'synced the planning board with an outside service',
+		'integration.planning_stop'         => 'stopped a planning sync',
+		'integration.planning_create'       => 'made a Notion backlog database for a planning sync',
+		'export.create'                     => 'made a full export',
+		'import.restore'                    => 'migrated a whole brain here from an archive',
+		'principal.bind'                    => 'bound a migrated person or agent',
+		'import.merge'                      => 'imported pages from an archive',
+		'import.reference'                  => 'approved imported pages as reference',
+		'import.move'                       => 'moved scopes here from an archive',
+		'review.memory_approved'            => 'approved a proposed memory',
+		'review.memory_rejected'            => 'rejected a proposed memory',
+		'backup.upload'                     => 'uploaded a backup',
+		'backup.key_generated'              => 'generated the backup key',
+		'backup.key_downloaded'             => 'downloaded the backup key',
+		'backup.markdown_export_degraded'   => 'backup skipped the Markdown pages',
+		'forget.requested'                  => 'requested a forget',
+		'erase.request'                     => 'requested a forget',
+		'erase.verify'                      => 'checked whether a subject was forgotten',
+		'retention.sweep'                   => 'purged memories deleted over 30 days ago',
+		'scope.second_refused'              => 'was refused a second scope on a post',
+		'recall_search'                     => 'searched memory',
+		'memory.rollover_failed'            => 'memory rollover failed',
+		'memory.write_failed'               => 'could not save a memory',
+		'artifact_assembly_memory_failed'   => 'could not save an assembled document\'s summary as a memory',
+		'compression.write_failed'          => 'compression could not save its result',
+		'artifact_archive'                  => 'archived a document',
+		'cloud.push_job'                    => 'sent a job to the cloud',
+		'agent.register'                    => 'registered an agent',
+		'agent.register_failed'             => 'failed to register an agent',
+		'agent.register_key_reused'         => 'tried to reuse a spent registration key',
+		'agent.registration_create'         => 'created an agent registration',
+		'agent.registration_revoke'         => 'revoked an agent registration',
+		'agent.revoke_app_passwords'        => 'revoked an agent\'s app passwords',
+		'agent.status'                      => 'changed an agent\'s status',
+		// #850: offboarding, one line per step of a hand over.
+		'hand_over.moved'                   => 'handed something someone owned to a new owner',
+		'hand_over.agent_suspended'         => 'suspended an agent of someone who left',
+		'hand_over.agent_moved'             => 'moved an agent of someone who left to a new owner',
+		'hand_over.revoked'                 => 'revoked the access of someone who left',
+		'hand_over.scopes_granted'          => 'gave the new owner the scopes of what they inherited',
+		'hand_over.handoff'                 => 'told the new owner what they inherited',
+		'hand_over.completed'               => 'handed over someone who left',
+		'hand_over.denied'                  => 'was refused a hand over',
+		'agent.job_changed'                 => 'changed an agent\'s job',
+		'agent.rename'                      => 'renamed an agent',
+		'agent.tasks'                       => 'changed whether an agent takes tasks',
+		'agent.reads_scope_artifacts'       => 'changed whether an agent reads every artifact in its scopes',
+		'agent.task_feed'                   => 'made a task feed address for an agent',
+		'agent_inbox.wake'                  => 'set or removed an agent\'s wake address',
+		'voice.changed'                     => 'changed a writing voice',
+		'voice.deleted'                     => 'deleted a writing voice',
+		'clip.saved'                        => 'saved a web page from the web clipper',
+		'app_password_create'               => 'created an app password',
+		'app_password_delete'               => 'deleted an app password',
+		'hooks_login.create'                => 'made a hooks login for a computer',
+		'agent.issue'                       => 'issued an agent identity',
+		'agent.forbidden_caps_removed'      => 'removed capabilities an agent may not hold',
+		'agent.propose'                     => 'proposed a new agent',
+		'agent.proposal_expired'            => 'removed an expired agent proposal',
+		'agent_view.search'                 => 'tested a search in Agent View',
+		'artifact_assembled_proposal_failed' => 'could not propose an assembled document for review',
+		'backup.forget_propagate'           => 'passed a forget request on to the backups',
+		'cloud.callback'                    => 'received a result from the cloud',
+		'cloud.connect'                     => 'connected to TomaTío Cloud',
+		'cloud.disconnect'                  => 'disconnected from TomaTío Cloud',
+		'cloud.rest_request'                => 'received a cloud request',
+		'cloud.tick'                        => 'received a cloud wake-up call',
+		'compression.retry_requested'       => 'asked to retry a compression job',
+		'compression.update_target_invalid' => 'compression skipped a memory that no longer exists',
+		'handoff_outcome_memory_write_failed' => 'could not save a handoff outcome as a memory',
+		'memory.admin_delete'               => 'deleted a memory',
+		'memory.admin_update'               => 'edited a memory',
+		'oauth.authorize'                   => 'was asked to authorise an AI client',
+		// #853: how far a connection got before a grant.
+		'oauth.signin_asked'                => 'sent a signed-out visitor to sign in for an AI client',
+		'oauth.consent_shown'               => 'saw the consent screen for an AI client',
+		'connect.page_viewed'               => 'opened Connect an AI',
+		'connect.url_copied'                => 'copied a connector detail on Connect an AI',
+		'oauth.cimd_pin_unavailable'        => 'could not verify an AI client address',
+		'oauth.new_agent'                   => 'could not add a new agent for an AI client',
+		'oauth.client_read'                => 'read an AI client registration',
+		'oauth.client_register'            => 'registered an AI client',
+		'oauth.client_revoke'              => 'revoked a registered AI client',
+		'oauth.revoke'                      => 'revoked AI client access',
+		'oauth.token'                       => 'exchanged an AI client token',
+		'ops.decay_prune_batch'             => 'pruned old memories',
+		'review_outcome_memory_migration'   => 'migrated review outcomes into memories',
+		'review_outcome_memory_write_failed' => 'could not save a review outcome as a memory',
+		'scope.created'                     => 'created a scope',
+		'scope.deleted'                     => 'deleted a scope',
+		'scope.renamed'                     => 'renamed a scope',
+		'scope_grant'                       => 'granted a scope to an agent',
+		'scope_revoke'                      => 'revoked a scope from an agent',
+		'grant.removed'                     => 'took the public grant off an item',
+		'approval_grant'                    => 'granted approval rights to an agent',
+		'approval_revoke'                   => 'revoked approval rights from an agent',
+		'embed_code_issued'                 => 'issued a single-use code for an embedded document',
+		'embed_exchange_denied'             => 'was blocked: embed code could not be exchanged',
+		'embed_exchanged'                   => 'started an embedded document session',
+		'interactive_kill_switch_changed'   => 'changed the interactive mode kill switch',
+		'interactive_script_hosts_changed'  => 'changed the interactive script hosts',
+		'lease_minutes_changed'             => 'changed the section lease length',
+		'share_host_changed'                => 'changed the share link address',
+		'handoff_expired'                   => 'closed a review request nobody acted on in time',
+		'review_settings_changed'           => 'changed the review settings',
+		'merge_log'                         => 'received a merge from a repository webhook',
+		'merge_log.added'                   => 'added a repository to the merge log',
+		'merge_log.removed'                 => 'removed a repository from the merge log',
+		'merge_log.tioday'                  => 'chose the TíoDay a merge log repository records on',
+		'merge_log.counts'                  => 'chose which merges a merge log repository counts',
+		'backlog.made'                      => 'made a team backlog',
+		'extension.enabled'                 => 'turned an extension on',
+		'extension.disabled'                => 'turned an extension off',
+		'extension.revealed'                => 'opened the Magic Backlog board from TíoDay',
+		'backlog.read'                      => 'read the team\'s tools into the backlog',
+		'backlog.source_saved'              => 'set up a backlog source',
+		'backlog.source_removed'            => 'removed a backlog source',
+		'backlog.source_tested'             => 'tested the issue tracker',
+		'backlog.inbox_source'              => 'switched a source of the Inbox on or off',
+		'backlog.inbox_import'              => 'brought new work into the Inbox',
+		'action_context_changed'            => 'turned action context on or off',
+		'action_context_retention_changed'  => 'changed the action context retention period',
+		'provenance.retention'              => 'pruned action context and provenance past its retention period',
+		'provenance.scope_hold'             => 'held a write built on a more restricted scope for a curator',
+		'provenance.scope_block'            => 'was refused: a write built on a more restricted scope',
+		'scope_guard_changed'               => 'changed what happens to writes built on restricted scopes',
+		'share_link_approved'               => 'approved a share link',
+		'share_link_expired_access_attempt' => 'tried to open an expired share link',
+		'share_link_ip_mismatch'            => 'was blocked: share link opened from a different network address',
+		'share_link_minted'                 => 'created a share link',
+		'share_link_revoked'                => 'revoked a share link',
+		'share_link_revoked_access_attempt' => 'tried to open a revoked share link',
+		'artifact_viewer_identity_disabled' => 'turned off viewer identity for an artifact',
+		'artifact_viewer_identity_enabled'  => 'turned on viewer identity for an artifact',
+		'share_link_viewed'                 => 'opened a shared document',
+		'viewer_code_issued'                => 'issued a single-use viewer code',
+		'viewer_token_issued'               => 'opened an artifact as a named viewer',
+		'artifact_brain_read'               => 'toggled live brain reads for shared artifact pages',
+		'artifact_datastore_enabled'        => 'turned on the shared data store for an artifact',
+		'artifact_datastore_disabled'       => 'turned off the shared data store for an artifact',
+		'artifact_datastore_collections_set' => 'changed which data store collections share pages may use',
+		'datastore_write'                   => 'saved data through an artifact store',
+		'datastore_delete'                  => 'deleted data from an artifact store',
+		'datastore_link_undone'             => 'undid the data store writes of a share link',
+		'artifact_datastore_seats_on'       => 'turned on seats (personal links) for an artifact',
+		'artifact_datastore_seats_off'      => 'turned off seats (personal links) for an artifact',
+		'datastore_seat_claimed'            => 'claimed a seat on a shared page',
+		'datastore_seat_released'           => 'released a seat on a shared page',
+		'datastore_seat_imported'           => 'imported an existing personal link as a seat',
+		'artifact_datastore_seat_icon_set'  => 'changed how personal links\' Home Screen icons look',
+		'artifact_uploads_enabled'          => 'turned on file uploads for an artifact',
+		'artifact_uploads_disabled'         => 'turned off file uploads for an artifact',
+		'artifact_upload_created'           => 'uploaded a file to an artifact',
+		'artifact_upload_deleted'           => 'deleted a file from an artifact',
+		'artifact_upload_denied'            => 'was blocked: an upload was refused',
+		'artifact_ask_brain'                => 'toggled ask-the-brain for shared artifact pages',
+		'artifact_ask_cap'                  => 'set the daily ask budget for an artifact',
+		'artifact_setting_changed'          => 'changed an artifact setting over MCP',
+		'ask_brain_question'                => 'asked the brain a question from a page',
+	];
+
+	/**
+	 * Every audit event key that has plain-language wording.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function knownEvents(): array {
+		return array_keys(self::EVENT_LABELS + self::AUDIT_ONLY_LABELS);
+	}
+
+	/**
+	 * Every ability name that has plain-language wording.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function knownAbilities(): array {
+		return array_keys(self::ABILITY_LABELS);
+	}
+
+	/**
+	 * Live-feed wording; null for events kept out of the feed.
+	 */
+	public static function feed(string $event, string $objectId): ?string {
+		if ($event === 'ability.invoked') {
+			return self::ABILITY_LABELS[$objectId] ?? 'used ' . $objectId;
+		}
+
+		return self::EVENT_LABELS[$event] ?? null;
+	}
+
+	/**
+	 * Audit Log wording: the feed label when there is one, then the
+	 * audit-only labels, then a humanised version of the raw key. Never
+	 * null.
+	 */
+	public static function friendly(string $event, string $objectId): string {
+		if ($event === 'ability.invoked' && $objectId === '') {
+			return 'Used an ability';
+		}
+
+		if ($event === 'ability.invoked') {
+			$label = self::ABILITY_LABELS[$objectId] ?? 'used the ' . trim(str_replace(['agent-brain/', '-', '_', '/'], ['', ' ', ' ', ' '], $objectId)) . ' ability';
+
+			return ucfirst($label);
+		}
+
+		$label = self::feed($event, $objectId) ?? self::AUDIT_ONLY_LABELS[$event] ?? null;
+
+		if ($label === null) {
+			$label = trim(str_replace(['_', '.', '-'], ' ', $event));
+		}
+
+		return $label === '' ? $event : ucfirst($label);
+	}
+}

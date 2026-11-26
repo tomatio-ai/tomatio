@@ -1,0 +1,8 @@
+{
+  "name": "tomatio-hooks",
+  "version": "0.2.0",
+  "description": "TomaTío hooks: keep secrets out of the transcript and keep your TíoDay current from Claude Code, outside the AI.",
+  "author": { "name": "TomaTío" },
+  "homepage": "https://tomatio.ai/",
+  "keywords": ["tomatio", "tioday", "hooks", "secrets"]
+}
